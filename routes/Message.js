@@ -4,7 +4,7 @@ import {  createmessage, fetchMessagesByRoomId} from '../controllers/Message.js'
 
 
  router.post('/createmessage', createmessage)
- router.get('/allmessage',fetchMessagesByRoomId)
+ router.post('/allmessage',fetchMessagesByRoomId)
 
  
  export default router;

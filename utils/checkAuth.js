@@ -35,7 +35,7 @@ const checkAuth = (req, res, next) => {
     req.user = decoded;
 
     // Extract user ID and attach it to req.userId
-    req.userId = decoded.id; 
+    req.userId = decoded.userId; 
     console.log(req.userId)
     // Adjust the key according to your JWT payload
 
@@ -44,4 +44,3 @@ const checkAuth = (req, res, next) => {
 };
 
 export default checkAuth;
-
