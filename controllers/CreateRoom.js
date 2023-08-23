@@ -153,7 +153,7 @@ export const updateLatestMessage = async (req, res) => {
 export const fetchallrooms = async (req, res) => {
   try {
     const { userId } = req; // Assuming you've extracted the login user's ID using middleware
-
+console.log('fetchallrooms : userId',userId)
     const roomsCreatedByUser = await CreateRoom.find({
       members: userId,
     }).lean();
