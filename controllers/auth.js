@@ -47,11 +47,11 @@
 //     const user = await User.findOne({ email: req.body.email }).select(
 //       'name email password'
 //     );
-    
+
 //     if (!user) {
 //       return res.status(404).json({ error: 'User not found' });
 //     }
-    
+
 //     const isPasswordCorrect = await bcryptjs.compare(
 //       req.body.password,
 //       user.password
@@ -71,7 +71,7 @@
 //     });
 
 //     return res.status(200).json({ message: 'Login success', user: user, token: token });
-   
+
 //   } catch (error) {
 //     console.error(error);
 //     return res.status(500).json({ error: 'Server error' });
@@ -100,7 +100,7 @@
 import bcryptjs from "bcryptjs";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
-
+import axios from "axios"
 export const register = async (req, res) => {
   try {
     const salt = await bcryptjs.genSalt(10);
@@ -117,10 +117,10 @@ export const register = async (req, res) => {
       expiresIn: '1h', // Set the token expiration time as needed
     });
     const user = {
-            ...newuser.toObject(),
-            token: token,
-          };
-    return res.status(201).json({ message: 'User registered successfully', user:user });
+      ...newuser.toObject(),
+      token: token,
+    };
+    return res.status(201).json({ message: 'User registered successfully', user: user });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'Server error' });
@@ -149,9 +149,40 @@ export const login = async (req, res) => {
       expiresIn: '1d',
     });
 
-    return res.status(200).json({ message: 'Login success', user: user, token:token });
+    return res.status(200).json({ message: 'Login success', user: user, token: token });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Server error' });
   }
 };
+export const GoogleSigninAndLogin = async (req, res) => {
+  try {
+    const { token1 } = req.body
+    const response = await axios({
+      url: `https://oauth2.googleapis.com/tokeninfo?id_token=${token1}`,
+      method: "post",
+    });
+    console.log(response.data)
+    let user = await User.findOne({ sociallogin: response.data.sub })
+
+    if (!user) {
+      user = new User({
+        name: response.data.name,
+        email: response.data.email,
+        password: "password",
+        type: "google",
+        sociallogin: response.data.sub,
+        image: response.data.picture
+        // when using google as a login type then not using password
+      });
+      await user.save();
+    }
+    const token = jwt.sign({ userId: user._id }, 'shivam', {
+      expiresIn: '1d',
+    });
+    return res.status(200).json({ message: 'Login success', user: user, token: token });
+
+  } catch (err) {
+    res.status(500).json({ message: err });
+  }
+}

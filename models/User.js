@@ -10,7 +10,15 @@ const userSchema = new Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
+  
+  },
+  type:{
+    type:String,
+    default:""
+  },
+  sociallogin:{
+    type:String,
+    default:""
   },
   password: {
     type: String,

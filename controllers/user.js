@@ -2,7 +2,7 @@
  export const getUserInfo= async(req,res)=>{
   const {userId}=req
   try{
-    const data = await User.findById(userId).select('name email age about nationality occupation phone');
+    const data = await User.findById(userId).select('name email age about nationality occupation phone image');
     return res.status(200).json(data)
   }catch(err){
 return res.json(err)
@@ -59,11 +59,12 @@ export const updateUser = async (req, res) => {
         nationality: req.body.nationality,
         location: req.body.location,
         phone: req.body.phone,
+        image: req.body.image,
       },
       {
         new: true,
       }
-    ).select('name email age occupation nationality location phone');
+    ).select('name email age occupation nationality location phone image');
 
     if (!updatedUser) {
       return res.status(404).json({ error: 'User not found' });
